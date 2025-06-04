@@ -8,7 +8,7 @@ def main():
 
     cmd = sys.argv[1]
     if cmd == "train":
-        train.run()
+        train.train()
     else:
         print(f"Unknown command: {cmd}")
 
