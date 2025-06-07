@@ -8,3 +8,6 @@ scipy==1.15.3
 six==1.17.0
 threadpoolctl==3.6.0
 tzdata==2025.2
+torch>=1.7.0
+transformers>=4.0.0
+sentencepiece>=0.1.91
