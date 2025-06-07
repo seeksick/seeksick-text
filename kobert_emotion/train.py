@@ -40,7 +40,9 @@ def evaluate(model, dataloader, device):
 
 def train():
     # 1. 데이터 전처리
-    train_df, val_df, test_df = process_kemdy20_data()
+    train_df, val_df, test_df = process_kemdy20_data(
+        data_dir="C:/Users/Server1/seeksick/KEMDy20_v1_2/annotation"
+    )
     
     # 2. 토크나이저 로드
     tokenizer = AutoTokenizer.from_pretrained("monologg/kobert")
