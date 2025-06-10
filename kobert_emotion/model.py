@@ -1,23 +1,17 @@
-from transformers import BertModel, BertPreTrainedModel
+import torch
 import torch.nn as nn
+from transformers import AutoModel
 
-class KoBERTForEmotion(BertPreTrainedModel):
-    def __init__(self, config, num_labels=5):
-        super().__init__(config)
-        self.bert = BertModel(config)
+class KoBERTForEmotion(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.kobert = AutoModel.from_pretrained("monologg/kobert", trust_remote_code=True)
         self.dropout = nn.Dropout(0.1)
-        self.classifier = nn.Linear(config.hidden_size, num_labels)
-        self.softmax = nn.Softmax(dim=1)
-        self.init_weights()
-
-    def forward(self, input_ids, attention_mask, labels=None):
-        outputs = self.bert(input_ids=input_ids, attention_mask=attention_mask)
-        pooled_output = outputs.pooler_output
+        self.classifier = nn.Linear(768, 5)  # 5개의 감정 클래스 (softmax 분류)
+        
+    def forward(self, input_ids, attention_mask=None, token_type_ids=None):
+        outputs = self.kobert(input_ids=input_ids, attention_mask=attention_mask, token_type_ids=token_type_ids)
+        pooled_output = outputs[0][:, 0, :]  # [CLS] 토큰의 임베딩
         pooled_output = self.dropout(pooled_output)
         logits = self.classifier(pooled_output)
-        probs = self.softmax(logits)
-        loss = None
-        if labels is not None:
-            loss_fn = nn.KLDivLoss(reduction='batchmean')
-            loss = loss_fn(torch.log(probs + 1e-8), labels)
-        return {'loss': loss, 'logits': probs}
+        return logits  # softmax 분류용 로짓 반환

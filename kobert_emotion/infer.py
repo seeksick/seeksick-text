@@ -18,7 +18,7 @@ def predict(text, model, tokenizer):
         input_ids = encoding['input_ids'].cuda()
         attention_mask = encoding['attention_mask'].cuda()
         outputs = model(input_ids=input_ids, attention_mask=attention_mask)
-        probs = outputs['logits'].cpu().numpy()[0]
+        probs = torch.softmax(outputs, dim=1).cpu().numpy()[0]
         return probs  # [행복, 우울, 놀람, 분노, 중립] 순서
 
 if __name__ == "__main__":
